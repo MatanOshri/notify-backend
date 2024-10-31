@@ -34,6 +34,8 @@ app.get('/vapidPublicKey', (req, res) => {
 app.post('/subscribe', (req, res) => {
     const subscription = req.body;
     subscriptions.push(subscription);
+    console.log(subscription)
+    console.log("Subscription added successfully")
     res.status(201).json({ message: 'Subscription added successfully' });
 });
 
