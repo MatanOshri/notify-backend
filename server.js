@@ -1,9 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const webPush = require('web-push');
+const cors = require('cors');  // Import CORS
 const bodyParser = require('body-parser');
 
 const app = express();
+
+app.use(cors({
+    origin: 'https://matanoshri.github.io'  // Replace with your client origin
+}));
 app.use(bodyParser.json());
 
 // VAPID keys (public and private)
