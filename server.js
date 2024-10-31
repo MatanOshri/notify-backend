@@ -23,7 +23,7 @@ webPush.setVapidDetails(
 );
 
 // In-memory storage for subscriptions (for testing only)
-const subscriptions = [];
+const subscriptions = new Map();
 
 // Endpoint to get the VAPID public key
 app.get('/vapidPublicKey', (req, res) => {
@@ -33,8 +33,11 @@ app.get('/vapidPublicKey', (req, res) => {
 // Endpoint to register a new subscription
 app.post('/subscribe', (req, res) => {
     const subscription = req.body;
-    subscriptions.push(subscription);
-    console.log(subscription)
+    const endpoint = subscription.endpoint;
+
+    // Add or overwrite subscription in the Map
+    subscriptions.set(endpoint, subscription);
+    
     console.log("Subscription added successfully")
     res.status(201).json({ message: 'Subscription added successfully' });
 });
@@ -46,10 +49,10 @@ app.post('/sendNotification', (req, res) => {
         body: 'This is a test notification from the server',
     });
 
-    const promises = subscriptions.map(subscription =>
+    const promises = Array.from(subscriptions.values()).map(subscription =>
         webPush.sendNotification(subscription, notificationPayload)
             .catch(error => console.error('Notification error:', error))
-    );
+    );    
 
     Promise.all(promises)
         .then(() => res.status(200).json({ message: 'Test notification sent successfully' }))
